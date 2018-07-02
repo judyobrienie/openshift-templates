@@ -17,7 +17,7 @@ objects:
       - name: JENKINS_PASSWORD
         value: ${JENKINS_PASSWORD}
       image: quay.io/judyobrien/jenkins
-      name: master
+      name: jenkins
       ports:
       - containerPort: 8080
         protocol: TCP
