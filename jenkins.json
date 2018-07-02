@@ -21,7 +21,7 @@ objects:
       - name: claimName
         value: jenkins-data
       image: quay.io/judyobrien/jenkins
-      name: jenkins
+      name: jenkins-data
       ports:
       - containerPort: 8080
         protocol: TCP
