@@ -17,9 +17,9 @@ objects:
       - name: JENKINS_PASSWORD
         value: ${JENKINS_PASSWORD}
       - name: mountPath
-        value: /home/jenkins_home/
+        value: /var/lib/jenkins
       - name: claimName
-        value: jenkins-maven
+        value: jenkins-data
       image: quay.io/judyobrien/jenkins
       name: jenkins
       ports:
@@ -27,7 +27,7 @@ objects:
         protocol: TCP
       securityContext:
         fsGroup: 1000
-        runAsNonRoot: false 
+         
 parameters:
 - description: Password used for Jenkins authentication
   from: '[A-Z0-9]{8}'
