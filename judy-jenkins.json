@@ -115,8 +115,7 @@
                                         "value": "${ENABLE_FATAL_ERROR_LOG_FILE}"
                                     }
                                 ],
-                                "image": "quay.io/judyobrien/jenkins ",
-                                "imagePullPolicy": "IfNotPresent",
+                                "image": "quay.io/judyobrien/jenkins",
                                 "livenessProbe": {
                                     "failureThreshold": 2,
                                     "httpGet": {
