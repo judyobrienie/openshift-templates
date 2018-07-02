@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Template
 metadata:
-  name: cicd-template
+  name: cicd-templates
   annotations:
     description: "Description"
     iconClass: "icon-load-balancer"
