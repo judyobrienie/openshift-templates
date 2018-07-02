@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: Template
+metadata:
+  name: cicd-template
+  annotations:
+    description: "Description"
+    iconClass: "icon-load-balancer"
+    tags: "jenkins,sonarqube"
+objects:
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    name: cicd-master
+  spec:
+    containers:
+    - env:
+      - name: JENKINS_PASSWORD
+        value: ${JENKINS_PASSWORD}
+      image: quay.io/judyobrien/jenkins
+      name: master
+      ports:
+      - containerPort: 8080
+        protocol: TCP
+parameters:
+- description: Password used for Jenkins authentication
+  from: '[A-Z0-9]{8}'
+  generate: expression
+  name: JENKINS_PASSWORD
+labels:
+  redis: master
