@@ -29,4 +29,4 @@ parameters:
   generate: expression
   name: JENKINS_PASSWORD
 labels:
-  redis: master
+   jenkins: master

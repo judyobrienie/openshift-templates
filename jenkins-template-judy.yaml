@@ -75,10 +75,7 @@ objects:
       type: Rolling
     template:
       metadata:
-        annotations:
-          quay.io/judyobrien/jenkins
-        creationTimestamp: null
-        labels:
+      labels:
           app: jenkins
           deploymentconfig: jenkins
       spec:
