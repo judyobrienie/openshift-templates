@@ -16,6 +16,10 @@ objects:
     - env:
       - name: JENKINS_PASSWORD
         value: ${JENKINS_PASSWORD}
+      - name: mountPath
+        value: /home/jenkins_home/
+      - name: claimName
+        value: jenkins-maven
       image: quay.io/judyobrien/jenkins
       name: jenkins
       ports:
