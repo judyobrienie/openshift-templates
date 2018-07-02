@@ -3,17 +3,17 @@
     "apiVersion": "v1",
     "kind": "Template",
     "labels": {
-        "app": "ci/cd",
-        "template": "ci/cd-template"
+        "app": "cicd",
+        "template": "cicd-template"
     },
-    "message": "A ci/cd service has been created in your project.  Log into Jenkins with your OpenShift account.",
+    "message": "A cicd service has been created in your project.  Log into Jenkins with your OpenShift account.",
     "metadata": {
         "annotations": {
-            "description": "ci/cd service, with persistent storage.\n\nNOTE: You must have persistent volumes available in your cluster to use this template.",
+            "description": "cicd service, with persistent storage.\n\nNOTE: You must have persistent volumes available in your cluster to use this template.",
             "iconClass": "icon-load-balancer",
             "tags": "instant-app,jenkins"
         },
-        "name": "ci/cd"
+        "name": "cicd"
     },
     "objects": [
         {
