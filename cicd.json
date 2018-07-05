@@ -1,0 +1,286 @@
+{
+  "kind": "Template",
+  "apiVersion": "v1",
+  "metadata": {
+    "name": "cicd-jenkins-sonarqube",
+    "annotations": {
+      "description": "",
+      "iconClass": "icon-load-balancer"
+    }
+  },
+  "objects": [{
+      "kind": "Service",
+      "apiVersion": "v1",
+      "metadata": {
+        "name": "jenkins-1",
+        "labels": {
+          "name": "jenkins-1"
+        }
+      },
+      "spec": {
+        "ports": [{
+          "port": 8080
+        }],
+        "selector": {
+          "name": "jenkins-replica-1"
+        },
+        "clusterIP": "None"
+      }
+    },
+    {
+      "kind": "PersistentVolumeClaim",
+      "apiVersion": "v1",
+      "metadata": {
+        "name": "jenkins-claim-1"
+      },
+      "spec": {
+        "accessModes": [
+          "ReadWriteOnce"
+        ],
+        "resources": {
+          "requests": {
+            "storage": "${JENKINS_PVC_SIZE}"
+          }
+        }
+      }
+    },
+    {
+      "kind": "Service",
+      "apiVersion": "v1",
+      "metadata": {
+        "name": "sonarqube",
+        "labels": {
+          "name": "sonarqube"
+        }
+      },
+      "spec": {
+        "ports": [{
+          "port": 9000
+        }],
+        "selector": {
+          "name": "sonarqube-replica-1"
+        },
+        "clusterIP": "None"
+      }
+    },
+    {
+      "kind": "PersistentVolumeClaim",
+      "apiVersion": "v1",
+      "metadata": {
+        "name": "sonarqube-claim-1"
+      },
+      "spec": {
+        "accessModes": [
+          "ReadWriteOnce"
+        ],
+        "resources": {
+          "requests": {
+            "storage": "${SONARQUBE_PVC_SIZE}"
+          }
+        }
+      }
+    },
+    {
+      "kind": "DeploymentConfig",
+      "apiVersion": "v1",
+      "metadata": {
+        "name": "jenkins-1",
+        "labels": {
+          "name": "jenkins"
+        }
+      },
+      "spec": {
+        "strategy": {
+          "type": "Recreate",
+          "resources": {
+            "limits": {
+              "cpu": "1000m",
+              "memory": "1000Mi"
+            },
+            "requests": {
+              "cpu": "200m",
+              "memory": "200Mi"
+            }
+          }
+        },
+        "triggers": [{
+          "type": "ConfigChange"
+        }],
+        "replicas": 1,
+        "selector": {
+          "name": "jenkins-replica-1"
+        },
+        "template": {
+          "metadata": {
+            "labels": {
+              "name": "jenkins-replica-1"
+            }
+          },
+          "spec": {
+            "volumes": [{
+              "name": "jenkins-data-volume",
+              "persistentVolumeClaim": {
+                "claimName": "jenkins-claim-1"
+              }
+            }],
+            "containers": [{
+              "name": "jenkins",
+              "image": "quay.io/judyobrien/jenkins",
+              "ports": [{
+                "containerPort": 8080
+              }],
+              "volumeMounts": [{
+                "name": "jenkins-data-volume",
+                "mountPath": "/var/jenkins_home"
+              }],
+              "resources": {
+                "limits": {
+                  "cpu": "1000m",
+                  "memory": "1000Mi"
+                },
+                "requests": {
+                  "cpu": "200m",
+                  "memory": "200Mi"
+                }
+              },
+              "livenessProbe": {
+                "failureThreshold": 2,
+                "initialDelaySeconds": 5,
+                "periodSeconds": 60,
+                "successThreshold": 1,
+                "tcpSocket": {
+                  "port": 8080
+                },
+                "timeoutSeconds": 5
+              },
+              "imagePullPolicy": "IfNotPresent"
+            }]
+          }
+        }
+      }
+    },
+    {
+      "kind": "DeploymentConfig",
+      "apiVersion": "v1",
+      "metadata": {
+        "name": "sonarqube-1",
+        "labels": {
+          "name": "sonarqube"
+        }
+      },
+      "spec": {
+        "strategy": {
+          "type": "Recreate",
+          "resources": {
+            "limits": {
+              "cpu": "1000m",
+              "memory": "1000Mi"
+            },
+            "requests": {
+              "cpu": "200m",
+              "memory": "200Mi"
+            }
+          }
+        },
+        "triggers": [{
+          "type": "ConfigChange"
+        }],
+        "replicas": 1,
+        "selector": {
+          "name": "sonarqube-replica-1"
+        },
+        "template": {
+          "metadata": {
+            "labels": {
+              "name": "sonarqube-replica-1"
+            }
+          },
+          "spec": {
+            "volumes": [{
+              "name": "sonarqube-data-volume",
+              "persistentVolumeClaim": {
+                "claimName": "sonarqube-claim-1"
+              }
+            }],
+            "containers": [{
+              "name": "sonarqube",
+              "image": "quay.io/judyobrien/sonarqube",
+              "ports": [{
+                "containerPort": 8080
+              }],
+              "volumeMounts": [{
+                "name": "sonarqube-data-volume",
+                "mountPath": "/opt/sonarqube/data"
+              }],
+              "resources": {
+                "limits": {
+                  "cpu": "1000m",
+                  "memory": "1000Mi"
+                },
+                "requests": {
+                  "cpu": "200m",
+                  "memory": "200Mi"
+                }
+              },
+              "livenessProbe": {
+                "failureThreshold": 2,
+                "initialDelaySeconds": 5,
+                "periodSeconds": 60,
+                "successThreshold": 1,
+                "tcpSocket": {
+                  "port": 8080
+                },
+                "timeoutSeconds": 5
+              },
+              "imagePullPolicy": "IfNotPresent"
+            }]
+          }
+        }
+      }
+    }
+
+  ],
+  "parameters": [{
+      "name": "JENKINS_IMAGE",
+      "value": "quay.io/judyobrien/jenkins",
+      "description": "The name of the jenkins image"
+    },
+    {
+      "name": "ENDPOINT_COUNT",
+      "description": "The number of jenkins to create in a replica set",
+      "value": "1"
+    },
+    {
+      "name": "JENKINS_PVC_SIZE",
+      "description": "The size of the volume for Jenkins Data",
+      "value": "1Gi",
+      "required": true
+    },
+    {
+      "name": "JENKINS_INSTANCE",
+      "description": "The Jenkins service number",
+      "value": "1"
+    },
+    {
+      "name": "SONARQUBE_IMAGE",
+      "value": "quay.io/judyobrien/sonarqube",
+      "description": "The name of the sonarqube image"
+    },
+    {
+      "name": "ENDPOINT_COUNT",
+      "description": "The number of sonarqubes to create in a replica set",
+      "value": "1"
+    },
+    {
+      "name": "SONARQUBE_PVC_SIZE",
+      "description": "The size of the volume for SONARQUBE Data",
+      "value": "1Gi",
+      "required": true
+    },
+    {
+      "name": "SONARQUBE_INSTANCE",
+      "description": "The Sonarqube service number",
+      "value": "1"
+    }
+  ]
+}
