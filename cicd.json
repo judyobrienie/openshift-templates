@@ -28,6 +28,19 @@
       }
     },
     {
+      "kind": "Route",
+      "apiVersion": "v1",
+      "metadata": {
+        "name": "jenkins"
+      },
+      "spec": {
+        "to": {
+          "kind": "Service",
+          "name": "jenkins-1"
+        }
+      }
+    },
+    {
       "kind": "PersistentVolumeClaim",
       "apiVersion": "v1",
       "metadata": {
@@ -61,6 +74,19 @@
           "name": "sonarqube-replica-1"
         },
         "clusterIP": "None"
+      }
+    },
+    {
+      "kind": "Route",
+      "apiVersion": "v1",
+      "metadata": {
+        "name": "sonarqube"
+      },
+      "spec": {
+        "to": {
+          "kind": "Service",
+          "name": "sonarqube"
+        }
       }
     },
     {
@@ -128,6 +154,10 @@
               "image": "quay.io/judyobrien/jenkins",
               "ports": [{
                 "containerPort": 8080
+              }],
+              "env": [{
+                "name": "SONARQUBE_SERVICE",
+                "value": "sonarqube"
               }],
               "volumeMounts": [{
                 "name": "jenkins-data-volume",
@@ -206,11 +236,15 @@
               "name": "sonarqube",
               "image": "quay.io/judyobrien/sonarqube",
               "ports": [{
-                "containerPort": 8080
+                "containerPort": 9000
               }],
               "volumeMounts": [{
                 "name": "sonarqube-data-volume",
                 "mountPath": "/opt/sonarqube/data"
+              }],
+              "env": [{
+                "name": "JENKINS_SERVICE",
+                "value": "jenkins-1"
               }],
               "resources": {
                 "limits": {
@@ -228,7 +262,7 @@
                 "periodSeconds": 60,
                 "successThreshold": 1,
                 "tcpSocket": {
-                  "port": 8080
+                  "port": 9000
                 },
                 "timeoutSeconds": 5
               },
