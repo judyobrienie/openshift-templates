@@ -151,7 +151,7 @@
             }],
             "containers": [{
               "name": "jenkins",
-              "image": "quay.io/judyobrien/jenkins:v1",
+              "image": "quay.io/judyobrien/jenkins",
               "ports": [{
                 "containerPort": 8080
               }],
